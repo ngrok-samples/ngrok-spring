@@ -11,16 +11,58 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.ngroksamples</groupId>
+    <groupId>com.ngrok</groupId>
     <artifactId>ngrok-spring</artifactId>
     <version>0.1.0</version>
     <packaging>jar</packaging>
     <name>ngrok-spring</name>
     <description>Attach a public ngrok URL to a Spring Boot app's own startup and shutdown.</description>
+    <url>https://github.com/ngrok-samples/ngrok-spring</url>
+
+    <organization>
+        <name>ngrok</name>
+        <url>https://ngrok.com</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>ishanj12</id>
+            <name>Ishan Jain</name>
+            <email>i.jain@ngrok.com</email>
+            <organization>ngrok</organization>
+            <organizationUrl>https://ngrok.com</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <url>https://github.com/ngrok-samples/ngrok-spring</url>
+        <connection>scm:git:https://github.com/ngrok-samples/ngrok-spring.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/ngrok-samples/ngrok-spring.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <issueManagement>
+        <system>GitHub issues</system>
+        <url>https://github.com/ngrok-samples/ngrok-spring/issues</url>
+    </issueManagement>
 
     <properties>
         <java.version>17</java.version>
         <ngrok.version>1.1.1</ngrok.version>
+
+        <!-- publishing plugins (only active in the central-distro profile) -->
+        <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
+        <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
+        <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
+        <central-publishing-maven-plugin.version>0.12.0</central-publishing-maven-plugin.version>
     </properties>
 
     <dependencies>
@@ -71,4 +113,81 @@
             </extension>
         </extensions>
     </build>
+
+    <profiles>
+        <!--
+          Maven Central publishing. Mirrors ngrok/ngrok-java's `central-distro` profile and
+          `ossrh` server id so the same Sonatype + GPG credentials can be reused, but targets
+          the Central Publisher Portal: Sonatype shut OSSRH (s01.oss.sonatype.org) down on
+          2025-06-30, so the nexus-staging-maven-plugin setup ngrok-java still carries no
+          longer works. Activate with `mvn -Pcentral-distro deploy`; local builds without the
+          profile need neither GPG nor Sonatype credentials.
+        -->
+        <profile>
+            <id>central-distro</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>${maven-source-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>${maven-javadoc-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${maven-gpg-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <!-- Non-interactive signing in CI; the passphrase comes from the
+                                 `gpg.passphrase` server entry that actions/setup-java writes. -->
+                            <gpgArguments>
+                                <arg>--pinentry-mode</arg>
+                                <arg>loopback</arg>
+                            </gpgArguments>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>${central-publishing-maven-plugin.version}</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>ossrh</publishingServerId>
+                            <autoPublish>true</autoPublish>
+                            <waitUntil>published</waitUntil>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

@@ -4,10 +4,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.ngroksamples</groupId>
+    <groupId>com.ngrok</groupId>
     <artifactId>ngrok-spring-parent</artifactId>
     <version>0.1.0</version>
     <packaging>pom</packaging>
+    <name>ngrok-spring-parent</name>
+    <description>Aggregator for the ngrok-spring library and its examples. Not published.</description>
+
+    <properties>
+        <!-- This aggregator is build-only: the library's parent is spring-boot-starter-parent,
+             so nothing on Maven Central refers to this POM. Only the library module deploys. -->
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
 
     <modules>
         <module>library</module>
