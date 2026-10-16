@@ -8,9 +8,9 @@ jobs:
     name: Run tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with:
           java-version: "17"
           distribution: "temurin"
@@ -26,12 +26,12 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Writes ~/.m2/settings.xml with an `ossrh` server entry (the id the
       # central-distro profile publishes with) and a `gpg.passphrase` entry,
       # both read from the env vars named here, and imports the GPG key.
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with:
           java-version: "17"
           distribution: "temurin"
