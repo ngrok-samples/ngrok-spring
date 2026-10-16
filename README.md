@@ -5,7 +5,7 @@ dependency:
 
 ```xml
 <dependency>
-    <groupId>com.ngroksamples</groupId>
+    <groupId>com.ngrok</groupId>
     <artifactId>ngrok-spring</artifactId>
     <version>0.1.0</version>
 </dependency>
@@ -67,6 +67,22 @@ ngrok.traffic-policy=on_http_request:\n  - actions:\n      - type: basic-auth\n 
 mvn test
 mvn -pl examples/basic -am spring-boot:run
 ```
+
+## Releasing
+
+Releases go to Maven Central under the `com.ngrok` groupId. To cut one:
+
+1. Bump `<version>` in `library/pom.xml`, `examples/basic/pom.xml` (both its own version and
+   its `ngrok-spring` dependency), `pom.xml`, and the README snippet above.
+2. Merge to `main`, then run the **Publish** workflow from the Actions tab (`workflow_dispatch`).
+   It runs the tests, deploys the `library` module via the `central-distro` Maven profile, and
+   tags `vX.Y.Z`.
+
+The workflow needs these repository secrets: `OSSRH_USERNAME` and `OSSRH_TOKEN` (a Central
+Portal user token for the `com.ngrok` namespace), `OSSRH_GPG_PRIVATE_KEY` and
+`OSSRH_GPG_PASSPHRASE` (the signing key, whose public half must be on a public keyserver).
+Plain `mvn verify` / `mvn install` builds never need any of them; signing and upload only
+happen with `-Pcentral-distro`.
 
 ## License
 
